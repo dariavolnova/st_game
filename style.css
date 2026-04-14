@@ -418,16 +418,17 @@ body {
 }
 
 /* Стили для эффекта клика */
+/* Стили для эффекта клика */
 .click-effect {
-    position: fixed;
-    border-radius: 50%;
-    background-color: rgba(255, 0, 0, 0.4);
-    border: 3px solid #ff0000;
-    pointer-events: none;
-    z-index: 1000;
-    transform: translate(-50%, -50%);
-    animation: clickPulse 0.8s ease-out forwards;
-    box-shadow: 0 0 15px rgba(255, 0, 0, 0.6);
+    position: fixed !important;
+    border-radius: 50% !important;
+    background-color: rgba(255, 0, 0, 0.6) !important;
+    border: 4px solid #ff0000 !important;
+    pointer-events: none !important;
+    z-index: 9999 !important;
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.8) !important;
+    display: block !important;
+    visibility: visible !important;
 }
 
 @keyframes clickPulse {
@@ -519,4 +520,36 @@ body {
     flex-direction: row;
     width: 15px;
     object-fit: contain;
+}
+/* Стили для эффекта клика */
+/* Стили для эффекта клика */
+.click-effect {
+    position: fixed !important;
+    border-radius: 50% !important;
+    background-color: rgba(255, 0, 0, 0.4) !important;
+    border: 3px solid #ff0000 !important;
+    pointer-events: none !important;
+    z-index: 9999 !important;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.6) !important;
+    display: block !important;
+    visibility: visible !important;
+    
+    /* Используем transform для центрирования */
+    transform: translate(-50%, -50%) !important;
+    
+    /* Анимация применяется к псевдо-свойствам */
+    animation: clickPulse 0.8s ease-out forwards !important;
+}
+
+@keyframes clickPulse {
+    0% {
+        opacity: 1;
+        width: calc(var(--effect-size, 60px) * 0.3);
+        height: calc(var(--effect-size, 60px) * 0.3);
+    }
+    100% {
+        opacity: 0;
+        width: calc(var(--effect-size, 60px) * 1.2);
+        height: calc(var(--effect-size, 60px) * 1.2);
+    }
 }
