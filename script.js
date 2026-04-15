@@ -11,43 +11,162 @@ const emailInput = document.getElementById('emailInput');
 const modalTitle = document.getElementById('modalTitle');
 const modalText = document.getElementById('modalText');
 const successMessageDiv = document.getElementById('successMessage');
+const gameSection = document.querySelector('.game-section');
+const gameTitle = document.querySelector('.game-title');
+const hintTooltip = document.getElementById('hintTooltip');
 
+// СИСТЕМА УРОВНЕЙ
+let currentLevel = 1;
+let totalLevels = 3; // Всего уровней
 let foundDifferences = new Set();
 
-// ФИКСИРОВАННЫЕ ПОЗИЦИИ ДЛЯ 3 ОТЛИЧИЙ (в процентах)
-const differencePositions = {
-    1: { top: 27, left: 19 },  // отличие 1
-    2: { top: 88, left: 77 },  // отличие 2
-    3: { top: 78, left: 13 }   // отличие 3
+// ДАННЫЕ УРОВНЕЙ (пути к картинкам, позиции отличий и подсказки)
+const levels = {
+    1: {
+        img1: 'assets/bride1.png',
+        img2: 'assets/bride2.png',
+        title: 'Уровень 1/3. Найди 3 отличия и получи персональную скидку на заказ',
+        differences: {
+            1: { top: 27, left: 19 },
+            2: { top: 88, left: 77 },
+            3: { top: 78, left: 13 }
+        },
+        hints: [
+            '1. На одной из картин что-то не так',
+            '2. Это что, пятно на ковре?',
+            '3. Обрати внимание на цветок'
+        ]
+    },
+    2: {
+        img1: 'assets/level2_img1.png',
+        img2: 'assets/level2_img2.png',
+        title: 'Уровень 2/3: Найди 3 отличия и получи персональную скидку на заказ',
+        differences: {
+            1: { top: 13, left: 7 },
+            2: { top: 38, left: 50 },
+            3: { top: 42, left: 88 }
+        },
+        hints: [
+            '1. Кажется, дама что-то потеряла',
+            '2. Присмотрись к наряду человека слева',
+            '3. Один из паровозов экономит уголь'
+        ]
+    },
+    3: {
+        img1: 'assets/level3_img1.png',
+        img2: 'assets/level3_img2.png',
+        title: 'Уровень 3/3: Найди 3 отличия и получи персональную скидку на заказ',
+        differences: {
+            1: { top: 90, left: 12 },
+            2: { top: 16, left: 77 },
+            3: { top: 62, left: 70 }
+        },
+        hints: [
+            '1. Кто-то не добросил мусор до урны',
+            '2. Не все люди уснули ночью',
+            '3. Снег на фонаре расстаял'
+        ]
+    }
 };
 
-console.log('Позиции отличий:', differencePositions);
+// Функция обновления подсказок для текущего уровня
+function updateHints() {
+    const currentLevelHints = levels[currentLevel].hints;
+    if (currentLevelHints && currentLevelHints.length >= 3) {
+        hintTooltip.innerHTML = `
+            <button class="close-tooltip" id="closeTooltip">✕</button>
+            ${currentLevelHints[0]}<br><br>
+            ${currentLevelHints[1]}<br><br>
+            ${currentLevelHints[2]}
+        `;
+        
+        // Перепривязываем обработчик для кнопки закрытия
+        const newCloseTooltip = document.getElementById('closeTooltip');
+        if (newCloseTooltip) {
+            newCloseTooltip.addEventListener('click', function() {
+                hintTooltip.classList.remove('show');
+            });
+        }
+    }
+}
+
+// Получаем позиции отличий для текущего уровня
+function getDifferencePositions() {
+    return levels[currentLevel].differences;
+}
+
+// Загрузка уровня
+function loadLevel(level) {
+    // Сбрасываем найденные отличия
+    foundDifferences.clear();
+    foundCountSpan.textContent = '0';
+    
+    // Обновляем заголовок
+    if (gameTitle) {
+        gameTitle.textContent = levels[level].title;
+    }
+    
+    // Обновляем подсказки
+    updateHints();
+    
+    // Меняем картинки
+    img1.src = levels[level].img1;
+    img2.src = levels[level].img2;
+    
+    // Ждем загрузки картинок и создаем маркеры
+    const onImagesLoad = () => {
+        createDiffMarkers();
+        updateMarkers();
+    };
+    
+    if (img1.complete && img2.complete) {
+        onImagesLoad();
+    } else {
+        let loadedCount = 0;
+        const checkLoaded = () => {
+            loadedCount++;
+            if (loadedCount === 2) {
+                onImagesLoad();
+            }
+        };
+        
+        img1.onload = checkLoaded;
+        img2.onload = checkLoaded;
+    }
+}
+
+// ФИКСИРОВАННЫЕ ПОЗИЦИИ ДЛЯ 3 ОТЛИЧИЙ (для текущего уровня)
+function getCurrentDifferencePositions() {
+    return levels[currentLevel].differences;
+}
 
 // РАЗМЕР МАРКЕРА В ПРОЦЕНТАХ ОТ ШИРИНЫ КАРТИНКИ
-const MARKER_SIZE_PERCENT = 8; // 8% от ширины картинки
+const MARKER_SIZE_PERCENT = 8;
 
 // Функция для получения размера маркера в пикселях
 function getMarkerSize(wrapper) {
     const img = wrapper.querySelector('img');
-    if (!img) return 60; // значение по умолчанию
+    if (!img) return 60;
     
     const imgWidth = img.clientWidth;
     return (imgWidth * MARKER_SIZE_PERCENT) / 100;
 }
 
-// Функция для получения радиуса попадания (такой же как размер маркера)
+// Функция для получения радиуса попадания
 function getClickRadius(wrapper) {
     const img = wrapper.querySelector('img');
     if (!img) return 30;
     
     const imgWidth = img.clientWidth;
-    return (imgWidth * MARKER_SIZE_PERCENT) / 200; // делим на 2 для радиуса
+    return (imgWidth * MARKER_SIZE_PERCENT) / 200;
 }
 
 // Функция для создания маркеров отличий
 function createDiffMarkers() {
     // Очищаем существующие маркеры
     document.querySelectorAll('.diff-marker').forEach(m => m.remove());
+    
+    const positions = getCurrentDifferencePositions();
     
     // Создаем маркеры для каждой картинки
     [wrapper1, wrapper2].forEach((wrapper, wrapperIndex) => {
@@ -59,26 +178,20 @@ function createDiffMarkers() {
             marker.dataset.diffNum = diffNum;
             marker.dataset.wrapper = wrapperIndex;
             
-            const pos = differencePositions[diffNum];
+            const pos = positions[diffNum];
+            if (!pos) continue;
+            
             marker.style.left = pos.left + '%';
             marker.style.top = pos.top + '%';
             
-            // Устанавливаем размер в пикселях
             marker.style.width = markerSize + 'px';
             marker.style.height = markerSize + 'px';
-            
-            // Добавляем номер отличия
-            const numberSpan = document.createElement('span');
-            numberSpan.className = 'diff-marker-number';
-            numberSpan.textContent = `#${diffNum}`;
-            marker.appendChild(numberSpan);
-            
             wrapper.appendChild(marker);
         }
     });
 }
 
-// Функция для обновления маркеров (помечать найденные)
+// Функция для обновления маркеров
 function updateMarkers() {
     document.querySelectorAll('.diff-marker').forEach(marker => {
         const diffNum = parseInt(marker.dataset.diffNum);
@@ -88,43 +201,14 @@ function updateMarkers() {
     });
 }
 
-// Создаем маркеры после загрузки изображений
-function initializeMarkers() {
-    if (img1.complete && img2.complete) {
-        createDiffMarkers();
-    } else {
-        let loadedCount = 0;
-        const checkLoaded = () => {
-            loadedCount++;
-            if (loadedCount === 2) {
-                createDiffMarkers();
-            }
-        };
-        
-        img1.addEventListener('load', checkLoaded);
-        img2.addEventListener('load', checkLoaded);
-    }
-}
-
-initializeMarkers();
-
-// Функция для создания эффекта красного круга
-function createClickEffect(x, y) {
-    const effect = document.createElement('div');
-    effect.className = 'click-effect';
-    effect.style.left = x + 'px';
-    effect.style.top = y + 'px';
-    document.body.appendChild(effect);
-    
-    setTimeout(() => {
-        effect.remove();
-    }, 800);
-}
 
 // Функция проверки попадания в область отличия
 function isClickOnDifference(clickX, clickY, wrapper, differenceNumber) {
     const rect = wrapper.getBoundingClientRect();
-    const pos = differencePositions[differenceNumber];
+    const positions = getCurrentDifferencePositions();
+    const pos = positions[differenceNumber];
+    if (!pos) return false;
+    
     const centerX = rect.left + (rect.width * pos.left / 100);
     const centerY = rect.top + (rect.height * pos.top / 100);
     const radius = getClickRadius(wrapper);
@@ -138,27 +222,20 @@ function isClickOnDifference(clickX, clickY, wrapper, differenceNumber) {
 }
 
 // Функция для обработки найденного отличия
-function handleDifferenceFound(differenceNumber, clickX, clickY) {
+function handleDifferenceFound(differenceNumber, clickX, clickY, event) {
     if (foundDifferences.has(differenceNumber)) return false;
     
     foundDifferences.add(differenceNumber);
     
-    // Показываем эффект красного круга в месте клика
-    createClickEffect(clickX, clickY);
-    
-    // Обновляем маркеры
     updateMarkers();
     
-    // Также показываем эффект на соответствующем месте второй картинки
     const otherWrapper = wrapper1 === event.currentTarget ? wrapper2 : wrapper1;
-    const pos = differencePositions[differenceNumber];
+    const positions = getCurrentDifferencePositions();
+    const pos = positions[differenceNumber];
     const otherRect = otherWrapper.getBoundingClientRect();
     const otherX = otherRect.left + (otherRect.width * pos.left / 100);
     const otherY = otherRect.top + (otherRect.height * pos.top / 100);
-    
-    setTimeout(() => {
-        createClickEffect(otherX, otherY);
-    }, 100);
+
     
     updateCounter();
     return true;
@@ -166,10 +243,19 @@ function handleDifferenceFound(differenceNumber, clickX, clickY) {
 
 function updateCounter() {
     foundCountSpan.textContent = foundDifferences.size;
+    
+    // Если все 3 отличия найдены на текущем уровне
     if (foundDifferences.size === 3) {
-        setTimeout(() => {
-            modal.classList.add('show');
-        }, 500);
+        if (currentLevel < totalLevels) {
+            // Мгновенный переход на следующий уровень (без анимации)
+            currentLevel++;
+            loadLevel(currentLevel);
+        } else {
+            // Это был последний уровень - показываем модальное окно
+            setTimeout(() => {
+                modal.classList.add('show');
+            }, 500);
+        }
     }
 }
 
@@ -184,7 +270,7 @@ function handleWrapperClick(event, wrapper) {
     for (let diffNum = 1; diffNum <= 3; diffNum++) {
         if (!foundDifferences.has(diffNum)) {
             if (isClickOnDifference(clickX, clickY, wrapper, diffNum)) {
-                handleDifferenceFound(diffNum, clickX, clickY);
+                handleDifferenceFound(diffNum, clickX, clickY, event);
                 found = true;
                 break;
             }
@@ -205,6 +291,9 @@ window.addEventListener('resize', () => {
         updateMarkers();
     }, 100);
 });
+
+// Загружаем первый уровень
+loadLevel(1);
 
 // Модальное окно
 modalClose.addEventListener('click', function() {
@@ -251,21 +340,29 @@ submitButton.addEventListener('click', function() {
     console.log('Email отправлен:', email);
 });
 
-// Подсказка
+// Подсказка (обновленная)
 const hintButton = document.getElementById('hintButton');
-const hintTooltip = document.getElementById('hintTooltip');
-const closeTooltip = document.getElementById('closeTooltip');
 
 hintButton.addEventListener('click', function() {
     hintTooltip.classList.toggle('show');
 });
 
-closeTooltip.addEventListener('click', function() {
-    hintTooltip.classList.remove('show');
-});
-
+// Обработчик для закрытия подсказки (глобальный)
 document.addEventListener('click', function(event) {
     if (!hintTooltip.contains(event.target) && !hintButton.contains(event.target)) {
         hintTooltip.classList.remove('show');
     }
 });
+
+// Для обновления обработчика закрытия при смене уровня
+function updateHintCloseHandler() {
+    const closeTooltip = document.getElementById('closeTooltip');
+    if (closeTooltip) {
+        closeTooltip.addEventListener('click', function() {
+            hintTooltip.classList.remove('show');
+        });
+    }
+}
+
+// Вызываем при загрузке
+updateHintCloseHandler();

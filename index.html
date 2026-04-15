@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Хедер интернет-магазина</title>
+    <title>Читай город - игра</title>
+    <link rel="icon" type="image/png" href="assets/icon.png">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -12,16 +13,24 @@
     <div class="container">
         <div class="header-top">
             <div class="logo">
-                <a href="https://www.labirint.ru/">
+                <a href="https://www.chitai-gorod.ru/">
                     <img src="assets/logo.png" alt="Логотип магазина">
                 </a>
             </div>
             <div class="user-actions">
-                <a href="https://www.labirint.ru/cabinet/putorder/" class="user-action" target="_blank">
-                    <img src="assets/heart.png" alt="Отложено" class="icon-img">
-                    <span>Отложено</span>
+                <a href="https://www.chitai-gorod.ru/" class="user-action" target="_blank">
+                    <img src="assets/account.png" alt="Вход" class="icon-img">
+                    <span>Аккаунт</span>
                 </a>
-                <a href="https://www.labirint.ru/cart/" class="user-action cart" target="_blank">
+                <a href="https://www.chitai-gorod.ru/" class="user-action order" target="_blank">
+                    <img src="assets/order.png" alt="Вход" class="icon-img">
+                    <span>Заказы</span>
+                </a>
+                <a href="https://www.chitai-gorod.ru/" class="user-action like" target="_blank">
+                    <img src="assets/like.png" alt="Вход" class="icon-img">
+                    <span>Любимое</span>
+                </a>
+                <a href="https://www.chitai-gorod.ru/cart/" class="user-action cart" target="_blank">
                     <img src="assets/cart.png" alt="Корзина" class="icon-img">
                     <span>Корзина</span>
                 </a>
@@ -30,16 +39,13 @@
 
         <nav class="main-menu">
             <ul class="menu-list">
-                <li><a href="https://www.labirint.ru/books/" target="_blank">Книги</a></li>
-                <li><a href="https://www.labirint.ru/foreignbooks/" target="_blank">Иностранные</a></li>
-                <li><a href="https://www.labirint.ru/best/" target="_blank">Главное</a></li>
-                <li><a href="https://www.labirint.ru/school/" target="_blank">Школа</a></li>
-                <li><a href="https://www.labirint.ru/office/" target="_blank">Канцтовары</a></li>
-                <li><a href="https://www.labirint.ru/games/" target="_blank">Игрушки</a></li>
-                <li><a href="https://www.labirint.ru/multimedia/" target="_blank">CD/DVD</a></li>
-                <li><a href="https://www.labirint.ru/souvenir/" target="_blank">Сувениры</a></li>
-                <li><a href="https://www.labirint.ru/journals/" target="_blank">Журналы</a></li>
-                <li><a href="https://www.labirint.ru/club/" target="_blank">Клуб</a></li>
+                <li><a href="https://www.chitai-gorod.ru/shops/" target="_blank">Магазины</a></li>
+                <li><a href="https://www.chitai-gorod.ru/promotions/" target="_blank">Акции</a></li>
+                <li><a href="https://www.chitai-gorod.ru/sales/" target="_blank">Распродажа</a></li>
+                <li><a href="https://www.chitai-gorod.ru/comics/" target="_blank">Комиксы и манга</a></li>
+                <li><a href="https://www.chitai-gorod.ru/certificate/" target="_blank">Сертификаты</a></li>
+                <li><a href="https://www.chitai-gorod.ru/bonus-program/" target="_blank">Программа лояльности</a></li>
+                <li><a href="https://www.chitai-gorod.ru/articles/" target="_blank">Блог</a></li>
             </ul>
         </nav>
     </div>
@@ -48,18 +54,18 @@
 <!-- БЛОК С ИГРОЙ "НАЙДИ 3 ОТЛИЧИЙ" -->
 <div class="game-section">
     <div class="game-header">
-        <div class="game-title">НАЙДИ 3 ОТЛИЧИЯ</div>
+        <div class="game-title">Найди 3 отличия и получи персональную скидку на заказ   </div>
         <button class="hint-button" id="hintButton">
             <img src="assets/light.png" alt="Подсказка" class="hint-img">
             Подсказка
         </button>
     </div>
+    <div class="game-description">
+        Кликни мышкой по отличиям на одной из картинок. Если будет сложно, воспользуйся подсказкой. И может, попробуешь угадать, как связаны герои изображений между собой?
+    </div>
 
     <div class="hint-tooltip" id="hintTooltip">
-        <button class="close-tooltip" id="closeTooltip">✕</button>
-        1. На одной из картин что-то не так<br>
-        2. Это что, пятно на ковре?<br>
-        3. Обрати внимание на цветок<br>
+        
     </div>
 
     <div class="images-compare">
@@ -92,7 +98,11 @@
         <div class="modal-icon">🎉</div>
         <div class="modal-title" id="modalTitle">Поздравляем!</div>
         <div class="modal-text" id="modalText">
-            Для получения персональной скидки напишите свою почту
+            Увидели отсылки?
+            В этих картинках мы спрятали три истории Чехова:
+            «Невеста», «Толстый и тонкий», «Каштанка».
+            Не беда, если не разглядели. Мы всё равно дарим <strong>скидку 15% на заказ</strong>.
+            Промокод придёт на вашу почту.
         </div>
         <input type="email" class="modal-input" id="emailInput" placeholder="Введите ваш email">
         <button class="modal-button" id="submitButton">Получить скидку</button>
